@@ -1,0 +1,55 @@
+.manage-branches {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.company-logo {
+  max-width: 50px;
+}
+
+.branch-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.branch-form input,
+.branch-form button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.branch-form button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.branch-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.branch-item {
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.branch-item button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}

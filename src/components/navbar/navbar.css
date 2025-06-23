@@ -1,0 +1,34 @@
+/* Navbar styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #007bff; /* Match with your logo's blue color */
+    height: 70px; /* Adjust the height as needed */
+}
+
+.navbar-logo img {
+    height: 60px; /* Adjust as needed */
+}
+
+.navbar-icons {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end; /* Align icons to the right */
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-icons .icon {
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+    cursor: pointer;
+}
+
+/* Make the icons clickable */
+.navbar-icons a {
+    display: flex;
+    align-items: center;
+}

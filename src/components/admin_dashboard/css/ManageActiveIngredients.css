@@ -1,0 +1,107 @@
+/* Apply gradient background to the whole page */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh; /* Ensures the body stretches to full height */
+  background-color: #f4f7fa; /* Base light gray color */
+  background-image: 
+    linear-gradient(to bottom left, rgba(0, 123, 255, 0.1), rgba(220, 53, 69, 0.1)); /* Soft blue to red gradient */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Container for managing categories and active ingredients */
+.manage-categories, .manage-active-ingredients {
+  width: 80%;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff; /* White background for content containers */
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  position: relative;
+  text-align: center; /* Center-align text */
+}
+
+/* Title styling */
+h2, h3 {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Category form styling */
+.category-form, .active-ingredient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #ffffff; /* White background for form */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Soft shadow for the form */
+}
+
+/* Form input fields */
+.category-form input, .active-ingredient-form input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.category-form input:focus, .active-ingredient-form input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Submit button styling */
+.category-form button, .active-ingredient-form button {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.category-form button:hover, .active-ingredient-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Category list and active ingredient list styling */
+.category-list, .active-ingredient-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+/* Category item and active ingredient item styling */
+.category-item, .active-ingredient-card {
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for items */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Button styling within items */
+.category-item button, .active-ingredient-card button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.category-item button:hover, .active-ingredient-card button:hover {
+  background-color: #c82333;
+}

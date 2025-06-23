@@ -1,0 +1,204 @@
+.branch-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+}
+
+.dashboard-header-wrapper {
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.dashboard-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.branch-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.branch-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #3b82f6;
+}
+
+.branch-info h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.branch-info p {
+    color: #64748b;
+    margin: 0;
+}
+
+/* Statistics Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-info h3 {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info p {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Tabs */
+.tabs-container {
+    border-bottom: 2px solid #e2e8f0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.tab:hover {
+    color: #3b82f6;
+}
+
+.tab.active {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+}
+
+.tab-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .branch-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .tab {
+        padding: 0.75rem 1rem;
+    }
+
+    .tab span {
+        display: none;
+    }
+
+    .tab-icon {
+        margin: 0;
+    }
+}
+
+/* Loading State */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid #e2e8f0;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+} 

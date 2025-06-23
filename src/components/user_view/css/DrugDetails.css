@@ -1,0 +1,95 @@
+/* DrugDetails.css */
+.container {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .drug-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .drug-details img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .drug-details h3 {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  
+  .drug-details p {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .drug-details .price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4caf50;
+  }
+  
+  .drug-details .stock {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .drug-details .available {
+    color: #4caf50;
+  }
+  
+  .drug-details .unavailable {
+    color: #f44336;
+  }
+  
+  .drug-details .branches,
+  .drug-details .quantity {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px 0;
+  }
+  
+  .drug-details select,
+  .drug-details input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .drug-details .buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+  }
+  
+  .drug-details .buttons button {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .drug-details .buttons button:disabled {
+    background-color: #ccc;
+  }
+  
+  .drug-details .buttons .favorite {
+    background-color: #f44336;
+  }
+  

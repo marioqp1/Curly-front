@@ -1,0 +1,92 @@
+/* Ensure body takes full height */
+html, body {
+  height: 100%; /* Set both HTML and body to 100% height */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  font-family: 'Poppins', sans-serif; /* Set font */
+  background-color: #f4f7fa; /* Optional: set background color for entire page */
+}
+
+/* Admin Dashboard container */
+.admin-dashboard {
+  width: 80%;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f4f7fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-height: calc(100vh - 60px); /* Ensure it takes full height minus footer height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Keep content aligned to the top */
+  align-items: center; /* Center content horizontally */
+  padding-bottom: 60px; /* Add padding at the bottom to avoid footer overlap */
+}
+
+/* Title styling */
+.admin-dashboard h2 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+/* Style for the buttons container */
+.dashboard-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Space between the title and the buttons */
+}
+
+/* Individual button styling */
+.dashboard-button {
+  padding: 12px 24px;
+  font-size: 18px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 250px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.dashboard-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-5px);
+}
+
+/* Blue Bar at the bottom of the page */
+.dashboard-footer {
+  width: 83.5%;
+  height: 60px;
+  background-color: #007BFF;
+  border-radius: 0 0 25px 25px;
+  position: absolute; /* Fixed position at the bottom */
+  bottom: 0; /* Keep it at the bottom of the page */
+  left: 10;
+  z-index: 10; /* Ensure it's above other content */
+}
+
+/* Ensure there's no hidden space or padding/margin after content */
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Responsive design: Make the buttons stack on small screens */
+@media (max-width: 768px) {
+  .dashboard-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dashboard-button {
+    width: 80%;
+    margin: 0 0 15px 0;
+  }
+}
