@@ -39,8 +39,8 @@ const HomePage = () => {
         console.error('Error fetching categories:', error);
       });
 
-    // Fetch featured products (you'll need to implement this endpoint)
-    fetch("http://localhost:8080/api/drugs-view/featured")
+    // Fetch featured products (now using the correct endpoint)
+    fetch("http://localhost:8080/api/drugs-view/featured-drugs")
       .then(response => response.json())
       .then(data => {
         if (data && Array.isArray(data.data)) {
@@ -131,14 +131,12 @@ const HomePage = () => {
 
               {/* Search Results Dropdown */}
               {searchResults.length > 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
+                <div className="absolute left-0 right-0 w-full max-w-2xl mx-auto mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
                   {searchResults.map((drug) => (
                     <button
                       key={drug.id}
                       onClick={() => handleProductClick(drug.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-100 
-                               text-gray-900 border-b border-gray-200 
-                               last:border-b-0 transition-colors"
+                      className="w-full px-4 py-3 text-left bg-white hover:bg-gray-100 text-gray-900 border-b border-gray-200 last:border-b-0 transition-colors"
                     >
                       <div className="flex items-center">
                         {drug.logo && (

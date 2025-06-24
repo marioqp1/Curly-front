@@ -13,6 +13,7 @@ const CartPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [visaInfo, setVisaInfo] = useState({ cardNumber: "", expiry: "", cvv: "" });
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [promo, setPromo] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
@@ -180,101 +181,112 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 font-sans">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-10">
-            <h1 className="text-4xl font-bold text-gray-800 flex items-center">
-              <ShoppingCartIcon className="h-10 w-10 mr-4 text-blue-600" />
-              Your Cart
-            </h1>
-            <button
-                onClick={() => navigate('/')}
-                className="flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors"
-            >
-                <ArrowLeftIcon className="h-5 w-5 mr-2" /> Continue Shopping
+    <div className="min-h-screen bg-gray-50 py-8 px-2 md:px-8">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+        {/* Left: Cart Items */}
+        <div className="flex-1">
+          <div className="flex items-center mb-6">
+            <button onClick={() => navigate(-1)} className="mr-4 text-gray-600 bg-transparent hover:bg-gray-100 hover:text-primary-600 transition-colors px-5 py-3 rounded-xl text-2xl">
+              &larr;
             </button>
-        </div>
-
-        {feedback && (
-          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-primary-600 text-white px-6 py-3 rounded-lg shadow-lg transition-all animate-bounce">
-            {feedback}
+            <h1 className="text-4xl md:text-5xl font-bold mr-4">Shopping Cart</h1>
+            {cart.items.length > 0 && (
+              <span className="ml-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-semibold">{cart.items.length} items</span>
+            )}
           </div>
-        )}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-8">
-            {cart.items.map((item) => {
-              const drug = drugDetails[item.drugId];
-              return (
-                <div key={item.id} className="flex bg-white rounded-xl shadow-md overflow-hidden p-6 items-center">
-                  <div className="flex-shrink-0 w-36 h-36 bg-gray-100 rounded-lg flex items-center justify-center">
-                    {drug && drug.logo ? (
-                      <img src={drug.logo} alt={drug.drugName} className="w-32 h-32 object-contain" />
-                    ) : (
-                      <ShoppingCartIcon className="w-20 h-20 text-gray-400" />
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 ml-6">
-                    <h2 className="text-lg font-bold text-gray-800">{drug ? drug.drugName : 'Unknown Drug'}</h2>
-                    <p className="text-sm text-gray-500">{drug ? drug.description.substring(0,50)+'...' : ''}</p>
-                    <span className="text-lg font-semibold text-blue-600 mt-1">${item.price}</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-between h-36 ml-6">
-                    <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleQuantityChange(item, item.quantity - 1)}
-                          disabled={item.quantity === 1 || updating === item.id}
-                          className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 hover:bg-gray-100 disabled:opacity-50 transition"
-                        >
-                          <MinusIcon className="h-4 w-4" />
-                        </button>
-                        <span className="text-lg font-bold w-8 text-center">{item.quantity}</span>
-                        <button
-                          onClick={() => handleQuantityChange(item, item.quantity + 1)}
-                          disabled={updating === item.id}
-                          className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 hover:bg-gray-100 disabled:opacity-50 transition"
-                        >
-                          <PlusIcon className="h-4 w-4" />
-                        </button>
+          <div className="space-y-4 mt-24">
+            {cart.items.length === 0 ? (
+              <div className="bg-white rounded-xl shadow p-8 text-center text-gray-500">Your cart is empty.</div>
+            ) : (
+              cart.items.map((item) => {
+                const drug = drugDetails[item.drugId] || {};
+                return (
+                  <div key={item.id} className="bg-white rounded-2xl shadow-lg flex flex-col md:flex-row items-center md:items-stretch p-6 gap-6 border border-gray-100">
+                    {/* Image */}
+                    <div className="w-28 h-28 md:w-32 md:h-32 bg-gray-100 rounded flex items-center justify-center text-gray-300 text-2xl">
+                      {drug.logo ? <img src={drug.logo} alt={drug.drugName} className="w-full h-full object-cover rounded" /> : <span>No Image</span>}
                     </div>
-                    <button
-                        onClick={() => handleRemove(item.id)}
-                        disabled={removing === item.id}
-                        className="p-2 rounded-md text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
-                        title="Remove item"
-                      >
-                        {removing === item.id ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
-                        ) : (
-                            <TrashIcon className="h-5 w-5" />
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-2xl md:text-3xl">{drug.drugName || 'Unknown Drug'}</div>
+                      <div className="text-xs text-gray-500 mb-1">{drug.companyName || ''}</div>
+                      {drug.prescriptionRequired && (
+                        <span className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded mb-1">Prescription Required</span>
+                      )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xl font-bold text-gray-900">${item.price}</span>
+                        {drug.oldPrice && (
+                          <span className="text-sm text-gray-400 line-through">${drug.oldPrice}</span>
                         )}
-                      </button>
+                      </div>
+                      {drug.available === false && (
+                        <div className="text-xs text-red-600 mt-1 flex items-center gap-1"><span>Currently out of stock</span></div>
+                      )}
+                    </div>
+                    {/* Controls */}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleQuantityChange(item, item.quantity - 1)} disabled={item.quantity === 1 || updating === item.id} className="w-8 h-8 rounded border border-gray-200 bg-white text-blue-600 hover:bg-blue-50">-</button>
+                        <span className="px-3 py-1 rounded bg-gray-50 border border-gray-200 text-base font-semibold">{item.quantity}</span>
+                        <button onClick={() => handleQuantityChange(item, item.quantity + 1)} disabled={updating === item.id} className="w-8 h-8 rounded border border-gray-200 bg-white text-blue-600 hover:bg-blue-50">+</button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setFeedback('Saved for later!')} className="flex items-center gap-1 border border-gray-200 bg-white text-gray-500 hover:text-blue-600 hover:bg-blue-50 text-sm"><span>&#9825;</span>Save</button>
+                        <button onClick={() => handleRemove(item.id)} className="border border-gray-200 bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 text-sm"><TrashIcon className="h-5 w-5" /></button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
-          {/* Cart Summary */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 h-fit sticky top-24">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Order Summary</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-gray-600">
-                <span>Subtotal</span>
-                <span className="font-medium text-gray-900">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between text-gray-600">
-                <span>Delivery Fee</span>
-                <span className="font-medium text-gray-900">${deliveryFee.toFixed(2)}</span>
-              </div>
+          {/* Promo Code */}
+          <div className="bg-white rounded-xl shadow p-4 mt-6 flex flex-col md:flex-row items-center gap-4 border border-gray-100">
+            <div className="font-semibold mb-2 md:mb-0">Promo Code</div>
+            <input
+              type="text"
+              value={promo}
+              onChange={e => setPromo(e.target.value)}
+              placeholder="Enter promo code"
+              className="flex-1 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
+            />
+            <button className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-primary-100 text-primary-700 font-semibold transition-colors">Apply</button>
+          </div>
+        </div>
+        {/* Right: Order Summary */}
+        <div className="w-full lg:w-96 flex-shrink-0 self-start mt-24">
+          <div className="bg-white rounded-2xl shadow-xl p-10 border-2 border-blue-100 sticky top-8 w-full lg:w-[420px] min-h-[500px]">
+            <div className="flex items-center gap-2 mb-4">
+              <CurrencyDollarIcon className="h-6 w-6 text-primary-600" />
+              <span className="text-lg font-bold">Order Summary</span>
             </div>
-            <div className="border-t border-gray-200 my-4"></div>
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-base font-medium text-gray-900">Total</span>
-              <span className="text-2xl font-bold text-blue-600">${total.toFixed(2)}</span>
+            <div className="flex justify-between text-sm mb-2">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
-            {/* Payment Method Selection */}
+            <div className="flex justify-between text-sm mb-2">
+              <span>Shipping</span>
+              <span>{deliveryFee === 0 ? 'FREE' : `$${deliveryFee.toFixed(2)}`}</span>
+            </div>
+            <div className="flex justify-between text-sm mb-2">
+              <span>Tax</span>
+              <span>${(subtotal * 0.08).toFixed(2)}</span>
+            </div>
+            <div className="border-t my-3"></div>
+            <div className="flex justify-between items-center text-lg font-bold mb-2">
+              <span>Total</span>
+              <span>${(subtotal + deliveryFee + subtotal * 0.08).toFixed(2)}</span>
+            </div>
+            {deliveryFee === 0 && (
+              <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded mb-2 text-sm">
+                <span>&#10003;</span> Free shipping applied!
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-4">
+              <input type="checkbox" checked readOnly className="accent-primary-600" />
+              <span className="text-xs text-gray-600">Secure checkout protected</span>
+            </div>
+            {/* Payment method selection and fake Visa fields */}
             <div className="mb-4">
               <label className="block font-medium mb-2">Payment Method</label>
               <div className="flex gap-4">
@@ -302,8 +314,6 @@ const CartPage = () => {
                 </label>
               </div>
             </div>
-
-            {/* Visa Form (Design Only) */}
             {paymentMethod === "Visa" && (
               <div className="mb-4 space-y-2">
                 <input
@@ -331,22 +341,35 @@ const CartPage = () => {
                 </div>
               </div>
             )}
-
-            {/* Place Order Button */}
             <button
-              className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-base shadow-md ${placingOrder ? "opacity-60 cursor-not-allowed" : ""}`}
               onClick={handlePlaceOrder}
-              disabled={
-                placingOrder ||
-                !paymentMethod ||
-                (paymentMethod === "Visa" && (!visaInfo.cardNumber || !visaInfo.expiry || !visaInfo.cvv))
-              }
+              disabled={placingOrder || !paymentMethod || (paymentMethod === "Visa" && (!visaInfo.cardNumber || !visaInfo.expiry || !visaInfo.cvv))}
+              className="w-full py-2 rounded-lg bg-primary-700 hover:bg-primary-800 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-2"
             >
               {placingOrder ? "Placing Order..." : "Place Order"}
             </button>
+            <button
+              onClick={() => navigate('/')} 
+              className="w-full py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold transition-colors"
+            >
+              Continue Shopping
+            </button>
+            <div className="mt-6 text-center text-xs text-gray-400">
+              We accept<br />
+              <span className="inline-flex gap-2 mt-1">
+                <span className="px-2 py-1 border rounded">VISA</span>
+                <span className="px-2 py-1 border rounded">MC</span>
+                <span className="px-2 py-1 border rounded">AMEX</span>
+                <span className="px-2 py-1 border rounded">CASH</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
+      {/* Message */}
+      {feedback && (
+        <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg z-50 bg-green-100 text-green-800`}>{feedback}</div>
+      )}
     </div>
   );
 };

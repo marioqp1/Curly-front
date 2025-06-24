@@ -15,6 +15,7 @@ const statusColors = {
   PREPARING: 'bg-blue-100 text-blue-800',
   READY: 'bg-green-100 text-green-800',
   SHIPPED: 'bg-gray-200 text-gray-700',
+  CANCELED: 'bg-red-100 text-red-800',
 };
 
 const SharedRequestList = ({ requests, loading, readOnly = false, onStatusChange, updateApiEndpoint = 'http://localhost:8080/api/request/update-status' }) => {
@@ -144,13 +145,22 @@ const SharedRequestList = ({ requests, loading, readOnly = false, onStatusChange
           {!readOnly && (
             <div className="mt-auto">
               {request.status === 'PENDING' && (
-                <button
-                  onClick={() => handleUpdateRequestStatus(request, 'READY')}
-                  className="w-full flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold shadow-sm mt-3"
-                >
-                  <CheckCircleIcon className="h-4 w-4 mr-1" />
-                  Mark as Ready
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleUpdateRequestStatus(request, 'READY')}
+                    className="flex-1 flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold shadow-sm mt-3"
+                  >
+                    <CheckCircleIcon className="h-4 w-4 mr-1" />
+                    Mark as Ready
+                  </button>
+                  <button
+                    onClick={() => handleUpdateRequestStatus(request, 'CANCELED')}
+                    className="flex-1 flex items-center justify-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold shadow-sm mt-3"
+                  >
+                    <XCircleIcon className="h-4 w-4 mr-1" />
+                    Cancel
+                  </button>
+                </div>
               )}
               {request.status === 'READY' && (
                 <button

@@ -153,6 +153,43 @@ const Navbar = () => {
     }
   };
 
+  const currentPath = window.location.pathname;
+
+  // Minimal navbar for login/signup
+  if (currentPath === '/login' || currentPath === '/signup') {
+    return (
+      <nav className="bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div className="flex w-full items-center h-20 px-4">
+          {/* Logo/Brand */}
+          <div className="flex items-center cursor-pointer flex-shrink-0" onClick={() => handleNavigation('/')}> 
+            <img src={logo} alt="Curely Logo" className="h-12 w-12 mr-4" />
+            <div className="flex flex-col">
+              <span className="text-3xl font-bold text-primary-700 dark:text-yellow-400 leading-tight">Curely</span>
+              <span className="text-sm text-primary-500 dark:text-yellow-200 -mt-1">Quick care, Always there</span>
+            </div>
+          </div>
+          <div className="ml-auto flex items-center space-x-4">
+            {currentPath !== '/login' && (
+              <button
+                onClick={() => handleNavigation('/login')}
+                className="px-4 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition"
+              >
+                Login
+              </button>
+            )}
+            <button
+              onClick={toggleDarkMode}
+              className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              aria-label="Toggle dark mode"
+            >
+              {isDarkMode ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   const renderDefaultNavbar = () => (
     <nav className="bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -190,10 +227,10 @@ const Navbar = () => {
   }
 
   // Don't show navbar on login/signup pages
-  const currentPath = window.location.pathname;
-  if (currentPath === '/login' || currentPath === '/signup') {
-    return null;
-  }
+  // const currentPath = window.location.pathname;
+  // if (currentPath === '/login' || currentPath === '/signup') {
+  //   return null;
+  // }
 
   const renderClientNavbar = () => (
     <nav className="bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">

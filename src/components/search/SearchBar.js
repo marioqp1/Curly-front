@@ -55,14 +55,12 @@ const SearchBar = () => {
 
       {/* Search Results Dropdown */}
       {searchResults.length > 0 && (
-        <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto">
+        <div className="absolute left-0 right-0 w-full max-w-xl mx-auto mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
           {searchResults.map((drug) => (
             <button
               key={drug.id}
               onClick={() => handleDrugClick(drug.id)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 
-                       text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 
-                       last:border-b-0 transition-colors"
+              className="w-full px-4 py-3 text-left bg-white hover:bg-gray-100 text-gray-900 border-b border-gray-200 last:border-b-0 transition-colors"
             >
               <div className="flex items-center">
                 {drug.logo && (
@@ -74,7 +72,7 @@ const SearchBar = () => {
                 )}
                 <div>
                   <div className="font-medium">{drug.drugName}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-gray-500">
                     {drug.description?.substring(0, 50)}...
                   </div>
                 </div>
