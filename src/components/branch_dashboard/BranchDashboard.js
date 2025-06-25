@@ -94,17 +94,10 @@ const BranchDashboard = () => {
     }).format(amount);
   };
 
-  // Helper to generate fake values for presentation
-  const getFakeValue = (real, min, max, decimals = 0) => {
-    if (real && real > 0) return real;
-    const factor = Math.pow(10, decimals);
-    return (Math.floor((Math.random() * (max - min) + min) * factor) / factor);
-  };
-
-  // Use fake values if real ones are missing/zero
-  const totalEmployeesDisplay = getFakeValue(branchInfo.totalEmployees, 8, 25);
-  const monthlyRevenueDisplay = getFakeValue(branchInfo.monthlyRevenue, 10000, 50000, 2);
-  const stockValueDisplay = getFakeValue(branchInfo.stockValue, 20000, 100000, 2);
+  // Use real values from API only
+  const totalEmployeesDisplay = branchInfo.totalEmployees;
+  const monthlyRevenueDisplay = branchInfo.monthlyRevenue;
+  const stockValueDisplay = branchInfo.stockValue;
 
   const stats = [
     {

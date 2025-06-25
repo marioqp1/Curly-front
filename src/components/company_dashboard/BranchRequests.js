@@ -76,6 +76,11 @@ const BranchRequests = () => {
         (request.id && typeof request.id === 'string' && request.id.toLowerCase().includes(searchTermLower))
       )
     );
+  })
+  // Sort: PENDING, READY first, then SHIPPED, CANCELED
+  .sort((a, b) => {
+    const order = { PENDING: 1, READY: 2, SHIPPED: 3, CANCELED: 4 };
+    return (order[a.status] || 99) - (order[b.status] || 99);
   });
 
   return (

@@ -107,6 +107,17 @@ const SharedRequestList = ({ requests, loading, readOnly = false, onStatusChange
             </span>
           </div>
           <div className="mb-2 text-base text-gray-700 font-semibold">Order ID: <span className="font-mono text-blue-700">{request.orderId}</span></div>
+          {request.requestDate && (
+            <div className="text-sm text-gray-500 mb-2">
+              {new Date(request.requestDate).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </div>
+          )}
           <button
             className="flex items-center gap-1 text-blue-600 hover:underline text-sm mb-1 focus:outline-none"
             style={{ background: 'none', border: 'none', padding: 0 }}
