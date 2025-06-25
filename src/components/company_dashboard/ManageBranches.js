@@ -173,8 +173,13 @@ const ManageBranches = () => {
               <button
                 onClick={fetchBranches}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                disabled={loading}
               >
-                <ArrowPathIcon className="h-5 w-5 mr-2" />
+                {loading ? (
+                  <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600 mr-2"></span>
+                ) : (
+                  <ArrowPathIcon className="h-5 w-5 mr-2" />
+                )}
                 Refresh
               </button>
               <button
@@ -202,7 +207,7 @@ const ManageBranches = () => {
                   <div className="flex-1">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <div className="p-2 rounded-lg bg-primary-100">
+                        <div className="p-2 rounded-lg">
                           <BuildingOffice2Icon className="h-6 w-6 text-primary-600" />
                         </div>
                       </div>
@@ -244,13 +249,13 @@ const ManageBranches = () => {
                         setSelectedBranch(branch);
                         setShowEditModal(true);
                       }}
-                      className="p-2 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors duration-200"
+                      className="p-2 text-gray-400 hover:text-primary-600 rounded-lg transition-colors duration-200 bg-transparent"
                     >
                       <PencilIcon className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteBranch(branch.branchId)}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200"
+                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-colors duration-200 bg-transparent"
                     >
                       <TrashIcon className="h-5 w-5" />
                     </button>
@@ -373,7 +378,7 @@ const ManageBranches = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-transparent hover:bg-gray-100"
                 >
                   Cancel
                 </button>
@@ -397,7 +402,7 @@ const ManageBranches = () => {
               <h3 className="text-lg font-medium text-gray-900">Edit Branch</h3>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-500"
+                className="text-gray-400 hover:text-gray-500 bg-transparent"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -468,7 +473,7 @@ const ManageBranches = () => {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-transparent hover:bg-gray-100"
                 >
                   Cancel
                 </button>

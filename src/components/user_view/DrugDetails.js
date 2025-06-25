@@ -132,7 +132,7 @@ const DrugDetails = () => {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-gray-600 hover:text-primary-600 mb-6 transition-colors group"
+          className="flex items-center text-gray-600 hover:text-primary-600 mb-6 transition-colors group bg-transparent hover:bg-gray-100"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-2 transform group-hover:-translate-x-1 transition-transform" />
           Back to Medications
@@ -283,7 +283,7 @@ const DrugDetails = () => {
 
               <button
                 onClick={handleFavorite}
-                className="w-full py-3 px-6 border border-primary-600 text-primary-600 rounded-xl hover:bg-primary-50 transition-colors flex items-center justify-center"
+                className="w-full py-3 px-6 border border-primary-600 text-primary-600 rounded-xl bg-transparent hover:bg-gray-100 transition-colors flex items-center justify-center"
               >
                 <HeartIcon className="h-5 w-5 mr-2" />
                 Add to Favorites

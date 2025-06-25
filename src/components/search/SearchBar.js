@@ -30,7 +30,7 @@ const SearchBar = () => {
   };
 
   const handleDrugClick = (drugId) => {
-    navigate(`/drug/${drugId}`);
+    navigate(`/drug/details/${drugId}`);
     setSearchTerm('');
     setSearchResults([]);
   };

@@ -216,7 +216,7 @@ const Login = () => {
                                 <label className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                     <input type="checkbox" className="form-checkbox mr-2" /> Remember me
                                 </label>
-                                <button type="button" className="text-primary-500 dark:text-yellow-400 hover:underline text-sm bg-transparent focus:outline-none">Forgot password?</button>
+                                <button type="button" className="text-primary-500 dark:text-yellow-400 hover:underline text-sm bg-transparent focus:outline-none" onClick={() => navigate('/forgot-password')}>Forgot password?</button>
                             </div>
                             <button
                                 type="submit"

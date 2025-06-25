@@ -29,6 +29,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Toaster } from 'react-hot-toast';
 import CompanyProfile from './components/company_dashboard/CompanyProfile';
 import BranchDashboard from './components/branch_dashboard/BranchDashboard';
+import ForgotPassword from './components/signin-signup/ForgotPassword';
+import ResetPassword from './components/signin-signup/ResetPassword';
 
 const App = () => {
   return (
@@ -63,6 +65,8 @@ const App = () => {
           <Route path="/orders/:orderId" element={<OrderStatus />} />
           <Route path="/requests" element={<RequestStatus />} />
           <Route path="/branch/dashboard" element={<BranchDashboard />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>

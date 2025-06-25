@@ -202,26 +202,27 @@ const CartPage = () => {
                 const drug = drugDetails[item.drugId] || {};
                 return (
                   <div key={item.id} className="bg-white rounded-2xl shadow-lg flex flex-col md:flex-row items-center md:items-stretch p-6 gap-6 border border-gray-100">
-                    {/* Image */}
-                    <div className="w-28 h-28 md:w-32 md:h-32 bg-gray-100 rounded flex items-center justify-center text-gray-300 text-2xl">
-                      {drug.logo ? <img src={drug.logo} alt={drug.drugName} className="w-full h-full object-cover rounded" /> : <span>No Image</span>}
-                    </div>
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-2xl md:text-3xl">{drug.drugName || 'Unknown Drug'}</div>
-                      <div className="text-xs text-gray-500 mb-1">{drug.companyName || ''}</div>
-                      {drug.prescriptionRequired && (
-                        <span className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded mb-1">Prescription Required</span>
-                      )}
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xl font-bold text-gray-900">${item.price}</span>
-                        {drug.oldPrice && (
-                          <span className="text-sm text-gray-400 line-through">${drug.oldPrice}</span>
+                    {/* Clickable Image and Name */}
+                    <div className="flex flex-1 min-w-0 items-center gap-6 cursor-pointer" onClick={() => navigate(`/drug/details/${item.drugId}`)}>
+                      <div className="w-28 h-28 md:w-32 md:h-32 bg-gray-100 rounded flex items-center justify-center text-gray-300 text-2xl">
+                        {drug.logo ? <img src={drug.logo} alt={drug.drugName} className="w-full h-full object-cover rounded" /> : <span>No Image</span>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-2xl md:text-3xl">{drug.drugName || 'Unknown Drug'}</div>
+                        <div className="text-xs text-gray-500 mb-1">{drug.companyName || ''}</div>
+                        {drug.prescriptionRequired && (
+                          <span className="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded mb-1">Prescription Required</span>
+                        )}
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xl font-bold text-gray-900">${item.price}</span>
+                          {drug.oldPrice && (
+                            <span className="text-sm text-gray-400 line-through">${drug.oldPrice}</span>
+                          )}
+                        </div>
+                        {drug.available === false && (
+                          <div className="text-xs text-red-600 mt-1 flex items-center gap-1"><span>Currently out of stock</span></div>
                         )}
                       </div>
-                      {drug.available === false && (
-                        <div className="text-xs text-red-600 mt-1 flex items-center gap-1"><span>Currently out of stock</span></div>
-                      )}
                     </div>
                     {/* Controls */}
                     <div className="flex flex-col items-end gap-2">

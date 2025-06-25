@@ -24,6 +24,8 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [subscribeMessage, setSubscribeMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,6 +82,21 @@ const HomePage = () => {
       }
     } else {
       setSearchResults([]);
+    }
+  };
+
+  const handleSubscribe = async () => {
+    setSubscribeMessage("");
+    if (!subscribeEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(subscribeEmail)) {
+      setSubscribeMessage("Please enter a valid email address.");
+      return;
+    }
+    try {
+      await axios.get(`http://localhost:8080/email/send-email/subscribe?to=${encodeURIComponent(subscribeEmail)}`);
+      setSubscribeMessage("Subscribed successfully! Check your email.");
+      setSubscribeEmail("");
+    } catch (error) {
+      setSubscribeMessage("Failed to subscribe. Please try again later.");
     }
   };
 
@@ -321,13 +338,24 @@ const HomePage = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white/50"
+                className="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white/50 text-black"
+                value={subscribeEmail}
+                onChange={e => setSubscribeEmail(e.target.value)}
               />
-              <button className="px-6 py-3 bg-white text-primary-600 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+              <button
+                className="px-6 py-3 bg-white text-primary-600 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                onClick={handleSubscribe}
+                type="button"
+              >
                 Subscribe
               </button>
             </div>
           </div>
+          {subscribeMessage && (
+            <div className="mt-4 text-white bg-primary-700 bg-opacity-80 rounded-lg px-4 py-2 inline-block">
+              {subscribeMessage}
+            </div>
+          )}
         </div>
       </div>
     </div>

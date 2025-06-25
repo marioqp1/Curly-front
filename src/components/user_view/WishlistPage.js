@@ -247,7 +247,11 @@ const WishlistPage = () => {
         {/* Wishlist Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sortedItems.map((item) => (
-            <div key={item.drugId} className={`bg-white rounded-xl shadow-md overflow-hidden border ${item.price < item.oldPrice ? 'border-green-400' : 'border-gray-100'} transform hover:scale-[1.01] transition-all duration-200 hover:shadow-lg p-2`}>
+            <div
+              key={item.drugId}
+              className={`bg-white rounded-xl shadow-md overflow-hidden border ${item.price < item.oldPrice ? 'border-green-400' : 'border-gray-100'} transform hover:scale-[1.01] transition-all duration-200 hover:shadow-lg p-2 cursor-pointer`}
+              onClick={() => navigate(`/drug/details/${item.drugId}`)}
+            >
               <div className="relative h-36 bg-gradient-to-br from-primary-50 to-accent-50 group">
                 {item.imageUrl ? (
                   <img
@@ -271,7 +275,7 @@ const WishlistPage = () => {
                 </div>
                 <div className="absolute top-2 right-2">
                   <button
-                    onClick={() => handleRemoveFromWishlist(item.drugId, item.id)}
+                    onClick={e => { e.stopPropagation(); handleRemoveFromWishlist(item.drugId, item.id); }}
                     className="p-1 bg-white/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-error-600 transition-colors shadow hover:shadow-md"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -290,7 +294,7 @@ const WishlistPage = () => {
                 <div className="space-y-2">
                   {item.available ? (
                     <button
-                      onClick={() => handleAddToCart(item.drugId)}
+                      onClick={e => { e.stopPropagation(); handleAddToCart(item.drugId); }}
                       disabled={addingToCart}
                       className="w-full py-2 px-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow hover:shadow-md text-sm"
                     >

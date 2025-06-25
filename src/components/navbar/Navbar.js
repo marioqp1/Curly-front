@@ -595,7 +595,7 @@ const Navbar = () => {
       <div className="w-full">
         <div className="flex w-full items-center h-20">
           {/* Logo/Brand */}
-          <div className="flex items-center cursor-pointer flex-shrink-0 pl-4" onClick={() => handleNavigation('/employee/dashboard')}> 
+          <div className="flex items-center cursor-pointer flex-shrink-0 pl-4" onClick={() => handleNavigation('/branch/dashboard')}> 
             <img src={logo} alt="Curely Logo" className="h-20 w-20 mr-4" style={{ minWidth: '80px', minHeight: '80px' }} />
             <div className="flex flex-col">
               <span className="text-3xl font-bold text-primary-700 dark:text-yellow-400 leading-tight">Curely</span>
