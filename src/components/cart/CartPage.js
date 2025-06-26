@@ -14,6 +14,8 @@ const CartPage = () => {
   const [visaInfo, setVisaInfo] = useState({ cardNumber: "", expiry: "", cvv: "" });
   const [placingOrder, setPlacingOrder] = useState(false);
   const [promo, setPromo] = useState("");
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(true);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
@@ -55,6 +57,28 @@ const CartPage = () => {
     };
     fetchDetails();
   }, [cart]);
+
+  // Fetch user location on mount
+  useEffect(() => {
+    const fetchLocation = async () => {
+      setLocationLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        const res = await axios.get('http://localhost:8080/api/location/get', { headers: { token } });
+        if (res.data.status && res.data.data) {
+          setUserLocation({ lat: res.data.data.lat, lng: res.data.data.lng });
+        } else {
+          setUserLocation(null);
+        }
+      } catch {
+        setUserLocation(null);
+      } finally {
+        setLocationLoading(false);
+      }
+    };
+    fetchLocation();
+  }, []);
 
   const handleRemove = async (itemId) => {
     setRemoving(itemId);
@@ -344,11 +368,14 @@ const CartPage = () => {
             )}
             <button
               onClick={handlePlaceOrder}
-              disabled={placingOrder || !paymentMethod || (paymentMethod === "Visa" && (!visaInfo.cardNumber || !visaInfo.expiry || !visaInfo.cvv))}
+              disabled={placingOrder || !paymentMethod || (paymentMethod === "Visa" && (!visaInfo.cardNumber || !visaInfo.expiry || !visaInfo.cvv)) || !userLocation}
               className="w-full py-2 rounded-lg bg-primary-700 hover:bg-primary-800 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-2"
             >
               {placingOrder ? "Placing Order..." : "Place Order"}
             </button>
+            {!userLocation && !locationLoading && (
+              <div className="text-red-600 text-sm text-center mb-2">You need to add your location first before placing an order.</div>
+            )}
             <button
               onClick={() => navigate('/')} 
               className="w-full py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold transition-colors"

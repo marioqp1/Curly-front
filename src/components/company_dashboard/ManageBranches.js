@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { 
@@ -13,12 +13,24 @@ import {
   XMarkIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix marker icon issue for leaflet in React
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 const ManageBranches = () => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditMap, setShowEditMap] = useState(false);
+  const [editMapModalOpen, setEditMapModalOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [newBranch, setNewBranch] = useState({
     branchName: '',
@@ -27,8 +39,15 @@ const ManageBranches = () => {
     phone: '',
     email: '',
     branchState: true,
-    zip: ''
+    zip: '',
+    lat: null,
+    lng: null
   });
+  const [tempLocation, setTempLocation] = useState({ lat: null, lng: null });
+  const markerRef = useRef(null);
+  const [addMapModalOpen, setAddMapModalOpen] = useState(false);
+  const [editPlaceName, setEditPlaceName] = useState('');
+  const [addPlaceName, setAddPlaceName] = useState('');
 
   useEffect(() => {
     fetchBranches();
@@ -70,12 +89,13 @@ const ManageBranches = () => {
       
       if (companyResponse.data.status) {
         const companyId = companyResponse.data.data.companyId;
+        const payload = {
+          ...newBranch,
+          branchState: newBranch.lat && newBranch.lng ? true : false
+        };
         const response = await axios.post(
           `http://localhost:8080/api/branches?companyId=${companyId}`,
-          {
-            ...newBranch,
-            branchState: true // Ensuring branchState is set to true for new branches
-          },
+          payload,
           { headers: { token } }
         );
         
@@ -89,7 +109,9 @@ const ManageBranches = () => {
             phone: '',
             email: '',
             branchState: true,
-            zip: ''
+            zip: '',
+            lat: null,
+            lng: null
           });
           fetchBranches();
         }
@@ -110,9 +132,13 @@ const ManageBranches = () => {
       
       if (companyResponse.data.status) {
         const companyId = companyResponse.data.data.companyId;
+        const payload = {
+          ...selectedBranch,
+          branchState: selectedBranch.lat && selectedBranch.lng ? true : false
+        };
         const response = await axios.put(
-          `http://localhost:8080/api/branches/${selectedBranch.id}?companyId=${companyId}`,
-          selectedBranch,
+          `http://localhost:8080/api/branches/${selectedBranch.branchId}?companyId=${companyId}`,
+          payload,
           { headers: { token } }
         );
         
@@ -145,6 +171,154 @@ const ManageBranches = () => {
       toast.error('Failed to delete branch');
     }
   };
+
+  // Helper for geolocation
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setTempLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        () => alert('Could not get your location')
+      );
+    } else {
+      alert('Geolocation is not supported by your browser');
+    }
+  };
+
+  // Helper to ensure valid coordinates
+  const getValidLatLng = (lat, lng) => [
+    typeof lat === 'number' && !isNaN(lat) ? lat : 30.0444,
+    typeof lng === 'number' && !isNaN(lng) ? lng : 31.2357
+  ];
+
+  function DraggableMarker({ position, onChange }) {
+    useMapEvents({
+      click(e) {
+        onChange([e.latlng.lat, e.latlng.lng]);
+      },
+    });
+    return (
+      <Marker
+        draggable
+        eventHandlers={{
+          dragend: (e) => {
+            const marker = e.target;
+            const pos = marker.getLatLng();
+            onChange([pos.lat, pos.lng]);
+          },
+        }}
+        position={position}
+      />
+    );
+  }
+
+  function MapModal({ open, onClose, onSave, lat, lng }) {
+    // Always call hooks first!
+    const [tempLocation, setTempLocation] = useState(getValidLatLng(lat, lng));
+    useEffect(() => {
+      setTempLocation(getValidLatLng(lat, lng));
+    }, [lat, lng, open]);
+
+    if (!open) return null;
+
+    // Helper for geolocation inside modal
+    const handleUseMyLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setTempLocation([pos.coords.latitude, pos.coords.longitude]);
+          },
+          () => alert('Could not get your location')
+        );
+      } else {
+        alert('Geolocation is not supported by your browser');
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-6 max-w-2xl w-full relative">
+          <h3 className="text-lg font-bold mb-2">Set Branch Location</h3>
+          <p className="text-sm text-gray-600 mb-2">Drag the marker or click on the map to set the branch location. You can also use your current location.</p>
+          <div className="mb-2 flex gap-2">
+            <button
+              className="px-3 py-1 border border-primary-600 text-primary-600 rounded hover:bg-primary-50 text-sm"
+              onClick={handleUseMyLocation}
+              type="button"
+            >
+              Use My Location
+            </button>
+            <button
+              className="px-3 py-1 border border-gray-400 text-gray-700 rounded hover:bg-gray-100 text-sm"
+              onClick={onClose}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+          <div style={{ height: 350, width: '100%' }} className="mb-4 rounded overflow-hidden">
+            <MapContainer center={tempLocation} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <DraggableMarker position={tempLocation} onChange={setTempLocation} />
+            </MapContainer>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-500">Lat: {tempLocation[0]}, Lng: {tempLocation[1]}</span>
+            <button
+              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 text-sm"
+              onClick={() => {
+                onSave(tempLocation[0], tempLocation[1]);
+                onClose();
+              }}
+              type="button"
+            >
+              Save Location
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fetch place name for edit modal
+  useEffect(() => {
+    const fetchPlaceName = async (lat, lng) => {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        setEditPlaceName(data.display_name || '');
+      } catch {
+        setEditPlaceName('');
+      }
+    };
+    if (showEditModal && selectedBranch && selectedBranch.lat && selectedBranch.lng) {
+      fetchPlaceName(selectedBranch.lat, selectedBranch.lng);
+    } else {
+      setEditPlaceName('');
+    }
+  }, [showEditModal, selectedBranch]);
+
+  // Fetch place name for add modal
+  useEffect(() => {
+    const fetchPlaceName = async (lat, lng) => {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        setAddPlaceName(data.display_name || '');
+      } catch {
+        setAddPlaceName('');
+      }
+    };
+    if (showAddModal && newBranch.lat && newBranch.lng) {
+      fetchPlaceName(newBranch.lat, newBranch.lng);
+    } else {
+      setAddPlaceName('');
+    }
+  }, [showAddModal, newBranch.lat, newBranch.lng]);
 
   if (loading) {
     return (
@@ -295,7 +469,7 @@ const ManageBranches = () => {
               <h3 className="text-lg font-medium text-gray-900">Add New Branch</h3>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-500"
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-transparent border border-gray-300 rounded-full p-1 transition-colors"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -374,6 +548,33 @@ const ManageBranches = () => {
                   placeholder="branch@example.com"
                 />
               </div>
+              <div>
+                <button
+                  type="button"
+                  className="px-5 py-2 border border-primary-600 text-primary-600 rounded-lg bg-transparent hover:bg-primary-50 text-base font-semibold transition-colors"
+                  onClick={() => {
+                    setAddMapModalOpen(true);
+                    setTempLocation({ lat: newBranch.lat, lng: newBranch.lng });
+                  }}
+                >
+                  Set Location on Map
+                </button>
+                <div className="text-base text-gray-700 font-semibold max-w-xs text-right truncate mt-1">
+                  {addPlaceName ? addPlaceName : 'No location set yet.'}
+                </div>
+                {!newBranch.lat || !newBranch.lng ? (
+                  <div className="bg-yellow-100 text-yellow-800 rounded p-2 mt-2 text-sm font-medium">
+                    This branch will be <b>deactivated</b> and cannot receive orders until a location is set.
+                  </div>
+                ) : null}
+                <MapModal
+                  open={addMapModalOpen}
+                  onClose={() => setAddMapModalOpen(false)}
+                  onSave={(lat, lng) => setNewBranch({ ...newBranch, lat, lng })}
+                  lat={newBranch.lat}
+                  lng={newBranch.lng}
+                />
+              </div>
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   type="button"
@@ -402,7 +603,7 @@ const ManageBranches = () => {
               <h3 className="text-lg font-medium text-gray-900">Edit Branch</h3>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-500 bg-transparent"
+                className="text-gray-400 hover:text-gray-600 bg-transparent border border-gray-300 rounded-full p-1 transition-colors absolute top-4 right-4"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -467,6 +668,33 @@ const ManageBranches = () => {
                   onChange={(e) => setSelectedBranch({ ...selectedBranch, email: e.target.value })}
                   className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   placeholder="branch@example.com"
+                />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  className="px-5 py-2 border border-primary-600 text-primary-600 rounded-lg bg-transparent hover:bg-primary-50 text-base font-semibold transition-colors"
+                  onClick={() => {
+                    setEditMapModalOpen(true);
+                    setTempLocation({ lat: selectedBranch.lat, lng: selectedBranch.lng });
+                  }}
+                >
+                  Set Location on Map
+                </button>
+                <div className="text-base text-gray-700 font-semibold max-w-xs text-right truncate mt-1">
+                  {editPlaceName ? editPlaceName : 'No location set yet.'}
+                </div>
+                {!selectedBranch.lat || !selectedBranch.lng ? (
+                  <div className="bg-yellow-100 text-yellow-800 rounded p-2 mt-2 text-sm font-medium">
+                    This branch will be <b>deactivated</b> and cannot receive orders until a location is set.
+                  </div>
+                ) : null}
+                <MapModal
+                  open={editMapModalOpen}
+                  onClose={() => setEditMapModalOpen(false)}
+                  onSave={(lat, lng) => setSelectedBranch({ ...selectedBranch, lat, lng })}
+                  lat={selectedBranch.lat}
+                  lng={selectedBranch.lng}
                 />
               </div>
               <div className="flex justify-end space-x-3 mt-6">

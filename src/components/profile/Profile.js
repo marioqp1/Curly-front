@@ -17,6 +17,9 @@ import {
   CheckBadgeIcon
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 const Profile = () => {
   const [userData, setUserData] = useState({
@@ -56,6 +59,9 @@ const Profile = () => {
   const [orderDetails, setOrderDetails] = useState({});
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState(null);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [placeName, setPlaceName] = useState('');
   const navigate = useNavigate();
 
   const fetchUserProfile = async () => {
@@ -339,6 +345,134 @@ const Profile = () => {
     fetchOrders();
   }, [activeTab]);
 
+  // Helper to ensure valid coordinates
+  const getValidLatLng = (lat, lng) => [
+    typeof lat === 'number' && !isNaN(lat) ? lat : 30.0444,
+    typeof lng === 'number' && !isNaN(lng) ? lng : 31.2357
+  ];
+
+  // Fetch user location on profile load
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        const res = await axios.get('http://localhost:8080/api/location/get', { headers: { token } });
+        if (res.data.status && res.data.data) {
+          setUserLocation({ lat: res.data.data.lat, lng: res.data.data.lng });
+        }
+      } catch {}
+    };
+    fetchLocation();
+  }, []);
+
+  // Fetch place name from lat/lng
+  const fetchPlaceName = async (lat, lng) => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+      const data = await res.json();
+      setPlaceName(data.display_name || '');
+    } catch {
+      setPlaceName('');
+    }
+  };
+
+  // Update place name when userLocation changes
+  useEffect(() => {
+    if (userLocation && userLocation.lat && userLocation.lng) {
+      fetchPlaceName(userLocation.lat, userLocation.lng);
+    } else {
+      setPlaceName('');
+    }
+  }, [userLocation]);
+
+  // Map modal for location picker
+  function LocationModal({ open, onClose, onSave, lat, lng }) {
+    const [tempLocation, setTempLocation] = useState(getValidLatLng(lat, lng));
+    useEffect(() => {
+      setTempLocation(getValidLatLng(lat, lng));
+    }, [lat, lng, open]);
+    const handleUseMyLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setTempLocation([pos.coords.latitude, pos.coords.longitude]);
+          },
+          () => alert('Could not get your location')
+        );
+      } else {
+        alert('Geolocation is not supported by your browser');
+      }
+    };
+    function DraggableMarker({ position, onChange }) {
+      useMapEvents({
+        click(e) {
+          onChange([e.latlng.lat, e.latlng.lng]);
+        },
+      });
+      return (
+        <Marker
+          draggable
+          eventHandlers={{
+            dragend: (e) => {
+              const marker = e.target;
+              const pos = marker.getLatLng();
+              onChange([pos.lat, pos.lng]);
+            },
+          }}
+          position={position}
+        />
+      );
+    }
+    if (!open) return null;
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-6 max-w-2xl w-full relative">
+          <h3 className="text-lg font-bold mb-2">Set Your Location</h3>
+          <p className="text-sm text-gray-600 mb-2">Drag the marker or click on the map to set your location. You can also use your current location.</p>
+          <div className="mb-2 flex gap-2">
+            <button
+              className="px-3 py-1 border border-primary-600 text-primary-600 rounded hover:bg-primary-50 text-sm"
+              onClick={handleUseMyLocation}
+              type="button"
+            >
+              Use My Location
+            </button>
+            <button
+              className="px-3 py-1 border border-gray-400 text-gray-700 rounded hover:bg-gray-100 text-sm"
+              onClick={onClose}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+          <div style={{ height: 350, width: '100%' }} className="mb-4 rounded overflow-hidden">
+            <MapContainer center={tempLocation} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <DraggableMarker position={tempLocation} onChange={setTempLocation} />
+            </MapContainer>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-500">Lat: {tempLocation[0]}, Lng: {tempLocation[1]}</span>
+            <button
+              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 text-sm"
+              onClick={() => {
+                onSave(tempLocation[0], tempLocation[1]);
+                onClose();
+              }}
+              type="button"
+            >
+              Save Location
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -467,6 +601,38 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-600 mb-1">City</label>
                   <input type="text" value={userData.city} disabled={!editingAddress} onChange={e => setUserData({ ...userData, city: e.target.value })} className="w-full rounded-lg border border-gray-200 px-4 py-2 bg-gray-50" />
                 </div>
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-600 mb-1">Location</label>
+                <div className="flex items-center justify-between mb-2 w-full">
+                  <button
+                    type="button"
+                    className="px-5 py-2 border border-primary-600 text-primary-600 rounded-lg bg-transparent hover:bg-primary-50 text-base font-semibold transition-colors"
+                    onClick={() => setLocationModalOpen(true)}
+                  >
+                    Set Location on Map
+                  </button>
+                  <div className="flex flex-col items-end ml-6">
+                    {placeName ? (
+                      <span className="text-base text-gray-700 font-semibold max-w-xs text-right truncate">{placeName}</span>
+                    ) : (
+                      <span className="text-base text-gray-500 font-semibold">No location set yet.</span>
+                    )}
+                  </div>
+                </div>
+                <LocationModal
+                  open={locationModalOpen}
+                  onClose={() => setLocationModalOpen(false)}
+                  onSave={async (lat, lng) => {
+                    try {
+                      const token = localStorage.getItem('token');
+                      await axios.post(`http://localhost:8080/api/location/set?lat=${lat}&lng=${lng}`, null, { headers: { token } });
+                      setUserLocation({ lat, lng });
+                    } catch {}
+                  }}
+                  lat={userLocation?.lat}
+                  lng={userLocation?.lng}
+                />
               </div>
               {editingAddress && (
                 <div className="mt-4">

@@ -33,6 +33,8 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
+  const [orderDetails, setOrderDetails] = useState({});
+  const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -54,6 +56,24 @@ const Orders = () => {
     fetchOrders();
   }, [token]);
 
+  useEffect(() => {
+    const fetchDetails = async () => {
+      const detailsMap = {};
+      for (const order of orders) {
+        try {
+          const res = await axios.get(`http://localhost:8080/api/orders/details?orderId=${order.id}`, {
+            headers: { token },
+          });
+          detailsMap[order.id] = res.data.data || [];
+        } catch (e) {
+          detailsMap[order.id] = [];
+        }
+      }
+      setOrderDetails(detailsMap);
+    };
+    if (orders.length > 0) fetchDetails();
+  }, [orders, token]);
+
   // Stats
   const totalOrders = orders.length;
   const shipped = orders.filter(o => (o.status || '').toUpperCase() === 'SHIPPED').length;
@@ -69,6 +89,14 @@ const Orders = () => {
       (order.items && order.items.some(item => item.name.toLowerCase().includes(search.toLowerCase())))
     );
   });
+
+  // Sort orders by time (most recent first)
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    const aTime = orderDetails[a.id]?.[0]?.localDateTime ? new Date(orderDetails[a.id][0].localDateTime).getTime() : 0;
+    const bTime = orderDetails[b.id]?.[0]?.localDateTime ? new Date(orderDetails[b.id][0].localDateTime).getTime() : 0;
+    return bTime - aTime;
+  });
+  const ordersToShow = showAll ? sortedOrders : sortedOrders.slice(0, 5);
 
   // In the Orders component, add a function to reload orders
   const handleRefresh = () => {
@@ -157,10 +185,10 @@ const Orders = () => {
         </div>
         {/* Orders Cards */}
         <div className="grid gap-6 sm:grid-cols-2">
-          {filteredOrders.length === 0 ? (
+          {ordersToShow.length === 0 ? (
             <div className="col-span-2 text-center text-gray-400 py-8">No orders found.</div>
           ) : (
-            filteredOrders.map(order => {
+            ordersToShow.map(order => {
               const status = (order.status || '').toUpperCase();
               let progress = 0;
               if (status === 'PENDING') progress = 25;
@@ -179,8 +207,16 @@ const Orders = () => {
                   </div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-lg font-bold text-blue-700">${order.totalPrice}</span>
-                    <span className="text-xs text-gray-500">{order.items?.length || 0} items</span>
+                    <span className="text-xs text-gray-500">
+                      {(orderDetails[order.id]?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0)} items
+                    </span>
                   </div>
+                  {/* Show order time if available */}
+                  {orderDetails[order.id] && orderDetails[order.id][0] && orderDetails[order.id][0].localDateTime && (
+                    <div className="text-xs text-gray-500 mb-2">
+                      {new Date(orderDetails[order.id][0].localDateTime).toLocaleString()}
+                    </div>
+                  )}
                   {/* Progress Bar */}
                   <div className="mb-2">
                     <div className="h-2 w-full bg-gray-200 rounded-full">
@@ -248,6 +284,17 @@ const Orders = () => {
             })
           )}
         </div>
+        {/* View More Button */}
+        {sortedOrders.length > 5 && !showAll && (
+          <div className="flex justify-center mt-4">
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow focus:outline-none"
+              onClick={() => setShowAll(true)}
+            >
+              View More
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
