@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { createDrug, deleteDrug, getDrugs } from './api';
+import { createDrug, deleteDrug, getDrugs, updateDrug } from './api';
 import { 
   PlusIcon,
   TrashIcon,
@@ -26,6 +26,7 @@ const ManageDrugs = () => {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingDrugId, setEditingDrugId] = useState(null);
 
   useEffect(() => {
     const fetchDrugs = async () => {
@@ -47,6 +48,31 @@ const ManageDrugs = () => {
 
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
+  };
+
+  const handleEdit = (drug) => {
+    setEditingDrugId(drug.id);
+    setNewDrug({
+      activeIngredientId: drug.activeIngredientId,
+      categoryId: drug.categoryId,
+      drugName: drug.drugName,
+      description: drug.description,
+      logo: drug.logo || ''
+    });
+    setImageFile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDrugId(null);
+    setNewDrug({
+      activeIngredientId: '',
+      categoryId: '',
+      drugName: '',
+      description: '',
+      logo: ''
+    });
+    setImageFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -86,7 +112,13 @@ const ManageDrugs = () => {
         logo: imageUrl || newDrug.logo
       };
 
-      await createDrug(drugData);
+      if (editingDrugId) {
+        await updateDrug(editingDrugId, drugData);
+        toast.success('Drug updated successfully');
+      } else {
+        await createDrug(drugData);
+        toast.success('Drug added successfully');
+      }
       
       // Refresh the drugs list
       const response = await getDrugs();
@@ -101,10 +133,10 @@ const ManageDrugs = () => {
         logo: ''
       });
       setImageFile(null);
-      toast.success('Drug added successfully');
+      setEditingDrugId(null);
     } catch (error) {
-      console.error('Error creating drug:', error);
-      toast.error('Failed to create drug');
+      console.error(editingDrugId ? 'Error updating drug:' : 'Error creating drug:', error);
+      toast.error(editingDrugId ? 'Failed to update drug' : 'Failed to create drug');
     } finally {
       setLoading(false);
     }
@@ -141,8 +173,24 @@ const ManageDrugs = () => {
         {/* Add New Drug Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <PlusIcon className="h-6 w-6 mr-2 text-primary-500" />
-            Add New Drug
+            {editingDrugId ? (
+              <>
+                <BeakerIcon className="h-6 w-6 mr-2 text-primary-500" />
+                Edit Drug
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="ml-4 px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <PlusIcon className="h-6 w-6 mr-2 text-primary-500" />
+                Add New Drug
+              </>
+            )}
           </h2>
           
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -248,12 +296,21 @@ const ManageDrugs = () => {
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Adding Drug...
+                    {editingDrugId ? 'Updating Drug...' : 'Adding Drug...'}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
-                    <PlusIcon className="h-5 w-5 mr-2" />
-                    Add Drug
+                    {editingDrugId ? (
+                      <>
+                        <BeakerIcon className="h-5 w-5 mr-2" />
+                        Update Drug
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="h-5 w-5 mr-2" />
+                        Add Drug
+                      </>
+                    )}
                   </div>
                 )}
               </button>
@@ -292,7 +349,8 @@ const ManageDrugs = () => {
                     <img 
                       src={drug.logo} 
                       alt={drug.drugName}
-                      className="w-full h-full object-cover"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '0.5rem', background: 'white' }}
+                      className="mx-auto"
                     />
                   ) : (
                     <BeakerIcon className="h-16 w-16 text-primary-400" />
@@ -312,13 +370,21 @@ const ManageDrugs = () => {
                 </div>
 
                 {/* Actions */}
-                <button
-                  onClick={() => handleDelete(drug.id)}
-                  className="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  <TrashIcon className="h-4 w-4 mr-2" />
-                  Delete
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(drug)}
+                    className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(drug.id)}
+                    className="flex-1 flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    <TrashIcon className="h-4 w-4 mr-2" />
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>

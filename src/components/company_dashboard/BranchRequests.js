@@ -141,7 +141,7 @@ const BranchRequests = () => {
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 {/* Status Filter */}
                 <div className="flex justify-center gap-2">
-                  {['All', 'Pending', 'Ready', 'Shipped'].map(option => (
+                  {['All', 'Pending', 'Ready', 'Shipped', 'Canceled'].map(option => (
                     <button
                       key={option}
                       onClick={() => setStatusFilter(option)}

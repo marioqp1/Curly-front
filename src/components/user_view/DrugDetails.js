@@ -142,12 +142,13 @@ const DrugDetails = () => {
           {/* Left: Drug Info */}
           <div className="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
             <div className="text-center mb-6">
-              <div className="h-48 bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl flex items-center justify-center mb-6 relative overflow-hidden group">
+              <div className="h-72 bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl flex items-center justify-center mb-8 relative overflow-hidden group shadow border border-gray-200">
                 {drug.imageUrl ? (
                   <img
                     src={drug.imageUrl}
                     alt={drug.drugName}
-                    className="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '1rem', background: 'white', boxShadow: '0 4px 24px rgba(0,0,0,0.07)' }}
+                    className="transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <div className="text-center">
@@ -158,14 +159,17 @@ const DrugDetails = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
 
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent mb-3">
+              <h1 className="text-4xl font-extrabold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent mb-2" style={{ WebkitTextFillColor: 'initial', color: '#2563eb' }}>
                 {drug.drugName}
               </h1>
-              <p className="text-gray-600 text-lg leading-relaxed">{drug.description}</p>
+              {drug.form && (
+                <div className="text-lg text-primary-500 font-semibold mb-2">{drug.form}</div>
+              )}
+              <p className="text-gray-600 text-lg leading-relaxed mb-6 tracking-wide">{drug.description}</p>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center p-4 bg-primary-50 rounded-xl border border-primary-100">
+              <div className="flex items-center p-4 bg-primary-50 rounded-xl border border-primary-100 hover:shadow-md transition-shadow">
                 <InformationCircleIcon className="h-6 w-6 text-primary-600 mr-3" />
                 <div>
                   <p className="font-medium text-gray-800">Active Ingredient</p>
@@ -173,7 +177,7 @@ const DrugDetails = () => {
                 </div>
               </div>
 
-              <div className="flex items-center p-4 bg-success-50 rounded-xl border border-success-100">
+              <div className="flex items-center p-4 bg-success-50 rounded-xl border border-success-100 hover:shadow-md transition-shadow">
                 <HeartIcon className="h-6 w-6 text-success-600 mr-3" />
                 <div>
                   <p className="font-medium text-gray-800">Category</p>
@@ -183,7 +187,7 @@ const DrugDetails = () => {
 
               {/* Additional Info Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                <div className="flex items-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex items-center p-4 bg-blue-50 rounded-xl border border-blue-100 hover:shadow-md transition-shadow">
                   <ShieldCheckIcon className="h-6 w-6 text-blue-600 mr-3" />
                   <div>
                     <p className="font-medium text-gray-800">Quality Assured</p>
@@ -191,7 +195,7 @@ const DrugDetails = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <div className="flex items-center p-4 bg-purple-50 rounded-xl border border-purple-100 hover:shadow-md transition-shadow">
                   <TruckIcon className="h-6 w-6 text-purple-600 mr-3" />
                   <div>
                     <p className="font-medium text-gray-800">Fast Delivery</p>
@@ -203,21 +207,36 @@ const DrugDetails = () => {
           </div>
 
           {/* Right: Purchase Section */}
-          <div className="lg:col-span-2 lg:sticky lg:top-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-100 self-start">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <div className="lg:col-span-2 lg:sticky lg:top-8 bg-white rounded-2xl shadow-xl p-8 border border-gray-100 self-start flex flex-col gap-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <ShoppingCartIcon className="h-6 w-6 mr-2 text-primary-500" />
               Add to Cart
             </h2>
 
             {/* Price Display */}
-            <div className="mb-6 p-4 bg-primary-50 rounded-xl border border-primary-100">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">Price</span>
-                <span className="text-2xl font-bold text-primary-600">${drug.price}</span>
-              </div>
+            <div className="mb-2 p-4 bg-primary-50 rounded-xl border border-primary-100 flex items-center justify-between">
+              <span className="text-gray-600">Price</span>
+              <span className="text-3xl font-extrabold text-primary-600">${drug.price}</span>
             </div>
 
-            <div className="mb-6">
+            {/* Stock/Availability */}
+            {typeof drug.available !== 'undefined' && (
+              <div className={`mb-2 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 ${drug.available ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                {drug.available ? (
+                  <>
+                    <CheckCircleIcon className="h-5 w-5 text-green-500" /> In Stock
+                  </>
+                ) : (
+                  <>
+                    <ExclamationTriangleIcon className="h-5 w-5 text-red-500" /> Out of Stock
+                  </>
+                )}
+              </div>
+            )}
+
+            <hr className="my-2 border-gray-200" />
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
               <div className="flex items-center space-x-3">
                 <button
@@ -245,28 +264,26 @@ const DrugDetails = () => {
 
             {/* Message Display */}
             {message && (
-              <div className={`mb-6 p-4 rounded-xl ${
+              <div className={`p-4 rounded-xl ${
                 messageType === 'success' ? 'bg-success-50 border-success-100' : 'bg-error-50 border-error-100'
-              } border`}>
-                <div className="flex items-center">
-                  {messageType === 'success' ? (
-                    <CheckCircleIcon className="h-5 w-5 text-success-600 mr-2" />
-                  ) : (
-                    <ExclamationTriangleIcon className="h-5 w-5 text-error-600 mr-2" />
-                  )}
-                  <p className={messageType === 'success' ? 'text-success-600' : 'text-error-600'}>
-                    {message}
-                  </p>
-                </div>
+              } border flex items-center gap-2`}>
+                {messageType === 'success' ? (
+                  <CheckCircleIcon className="h-5 w-5 text-success-600" />
+                ) : (
+                  <ExclamationTriangleIcon className="h-5 w-5 text-error-600" />
+                )}
+                <p className={messageType === 'success' ? 'text-success-600' : 'text-error-600'}>
+                  {message}
+                </p>
               </div>
             )}
 
             {/* Action Buttons */}
-            <div className="space-y-4">
+            <div className="space-y-3 mt-2">
               <button
                 onClick={handleAddToCart}
                 disabled={addingToCart}
-                className="w-full py-3 px-6 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-3 px-6 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-semibold shadow"
               >
                 {addingToCart ? (
                   <>
@@ -283,7 +300,7 @@ const DrugDetails = () => {
 
               <button
                 onClick={handleFavorite}
-                className="w-full py-3 px-6 border border-primary-600 text-primary-600 rounded-xl bg-transparent hover:bg-gray-100 transition-colors flex items-center justify-center"
+                className="w-full py-3 px-6 border border-primary-600 text-primary-600 rounded-xl bg-transparent hover:bg-primary-50 transition-colors flex items-center justify-center text-lg font-semibold shadow-sm"
               >
                 <HeartIcon className="h-5 w-5 mr-2" />
                 Add to Favorites

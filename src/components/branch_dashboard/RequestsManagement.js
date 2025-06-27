@@ -111,7 +111,7 @@ const RequestsManagement = () => {
 
         {/* Modern Status Filter */}
         <div className="flex justify-center gap-2 mb-6">
-          {['All', 'Pending', 'Ready', 'Shipped'].map(option => (
+          {['All', 'Pending', 'Ready', 'Shipped', 'Canceled'].map(option => (
             <button
               key={option}
               onClick={() => setStatusFilter(option)}

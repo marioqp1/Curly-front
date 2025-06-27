@@ -385,12 +385,13 @@ const ManageCategories = () => {
                 {filteredCategories.map(category => (
                   <div key={category.id} className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
                     {/* Category Image */}
-                    <div className="h-32 w-full bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                    <div className="h-40 w-full bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                       {category.logo ? (
                         <img 
                           src={category.logo} 
                           alt={category.categoryName}
-                          className="w-full h-full object-contain"
+                          style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '0.5rem', background: 'white' }}
+                          className="mx-auto"
                         />
                       ) : (
                         <TagIcon className="h-16 w-16 text-primary-400" />

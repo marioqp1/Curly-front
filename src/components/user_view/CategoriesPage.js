@@ -106,7 +106,7 @@ const CategoriesPage = () => {
                     <img 
                       src={category.logo} 
                       alt={category.categoryName || 'Category'}
-                      className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
                     <SparklesIcon className="w-16 h-16 text-primary-400 group-hover:scale-110 transition-transform duration-300" />
