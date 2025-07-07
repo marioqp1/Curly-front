@@ -31,6 +31,7 @@ import CompanyProfile from './components/company_dashboard/CompanyProfile';
 import BranchDashboard from './components/branch_dashboard/BranchDashboard';
 import ForgotPassword from './components/signin-signup/ForgotPassword';
 import ResetPassword from './components/signin-signup/ResetPassword';
+import PrescriptionReader from './components/user_view/PrescriptionReader';
 
 const App = () => {
   return (
@@ -67,6 +68,7 @@ const App = () => {
           <Route path="/branch/dashboard" element={<BranchDashboard />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/prescription-reader" element={<PrescriptionReader />} />
         </Routes>
       </div>
     </Router>

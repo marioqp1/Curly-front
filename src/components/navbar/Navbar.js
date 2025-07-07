@@ -19,7 +19,8 @@ import {
   ShoppingBagIcon,
   UserCircleIcon,
   MoonIcon,
-  SunIcon
+  SunIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import logo from '../../icons/logo.png';
 import SearchBar from '../search/SearchBar';
@@ -260,6 +261,14 @@ const Navbar = () => {
               <span>Wishlist</span>
             </button>
 
+            <button
+              onClick={() => handleNavigation('/prescription-reader')}
+              className="bg-transparent flex items-center space-x-1 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+            >
+              <DocumentTextIcon className="h-5 w-5" />
+              <span>Prescription Reader</span>
+            </button>
+
             <Link
               to="/cart"
               className="relative bg-transparent flex items-center px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
@@ -317,6 +326,14 @@ const Navbar = () => {
               >
                 <HeartIcon className="h-5 w-5" />
                 <span>Wishlist</span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation('/prescription-reader')}
+                className="bg-transparent flex items-center space-x-2 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+              >
+                <DocumentTextIcon className="h-5 w-5" />
+                <span>Prescription Reader</span>
               </button>
 
               <button
